@@ -13,8 +13,11 @@ def log(string):
         f.write(string)
 
 def getlog():
-    with open(logfile, "r") as f:
-        return f.read()
+    try:
+        with open(logfile, "r") as f:
+            return f.read()
+    except IOError as e:
+        return ""
 
 def test_proxy(proxy):
     proxy = proxy.replace("\n", "").split(" ")[0]
@@ -41,11 +44,12 @@ def test_proxy(proxy):
         print("Proxy seems UP !\nAnswered in : %s" %(end-start))
         if "detected" in r.text:
             print("Proxy detected by monip.org")
-            log("%s:%s:%s\n" %(proxy, "1", end-start))
+            log("%s;%s;%s\n" %(proxy, "1", end-start))
         else:
-            log("%s:%s:%s\n" %(proxy, "0", end-start))
-    except requests.exceptions.ConnectionError as e:
+            log("%s;%s;%s\n" %(proxy, "0", end-start))
+    except Exception as e:
         print("Proxy seems down")
+        log("%s;%s;%s\n" %(proxy, "0", "-1"))
         print(e)
 
 def main():
